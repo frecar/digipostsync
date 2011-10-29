@@ -1,11 +1,11 @@
-# Django settings for src project.
+# -*- coding: utf-8 -*-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Håkon Erichsen', 'hakon.erichsen@gmail.com'),
-    #('Fredrik Carlsen', 'fredrik@fncit.no')
+    ('Fredrik Carlsen', 'fredrik@fncit.no')
 )
 
 MANAGERS = ADMINS
@@ -110,6 +110,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',

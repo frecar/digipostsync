@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from api.digipostsync.user.models import User
 from piston.handler import BaseHandler
 from piston.utils import rc

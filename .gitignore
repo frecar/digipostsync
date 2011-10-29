@@ -6,6 +6,7 @@
 *.egg-info
 .*
 digipost.db
+libs/.DS_Store
 #generated buildout stuff
 backend/bin
 backend/develop-eggs
