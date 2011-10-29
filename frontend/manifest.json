@@ -1,0 +1,29 @@
+{
+  "name": "DigipostSync",
+  "version": "1.0.0",
+  "content_scripts": [
+    {
+      "matches": ["https://www.digipost.no/*"],
+      "css": [],
+      "js": ["test.js"]
+    },
+
+	{
+      "matches": ["https://www.digipost.no/*"],
+      "css": [],
+      "js": ["test.js"]
+    },
+
+	{
+      "matches": ["https://www.digipost.no/*"],
+      "css": [],
+      "js": ["test.js"]
+    },
+
+	{
+      "matches": ["https://www.digipost.no/*"],
+      "css": [],
+      "js": ["test.js"]
+    }
+  ]
+}
