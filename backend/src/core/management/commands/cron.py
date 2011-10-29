@@ -12,13 +12,13 @@ class Command(BaseCommand):
         from libs.dropbox_api import client, rest, session
         
         # Get your app key and secret from the Dropbox developer website
-        APP_KEY = 'gyqx9jdvi0c3ms4'
-        APP_SECRET = '7lzaa7cdni90p4k'
+        #APP_KEY = 'gyqx9jdvi0c3ms4'
+        #APP_SECRET = '7lzaa7cdni90p4k'
         
         # ACCESS_TYPE should be 'dropbox' or 'app_folder' as configured for your app
         ACCESS_TYPE = 'app_folder'
         
-        sess = session.DropboxSession(APP_KEY, APP_SECRET, ACCESS_TYPE)
+        sess = session.DropboxSession(settings.DROPBOX_APP_KEY, settings.DROPBOX_APP_SECRET, ACCESS_TYPE)
         
         request_token = sess.obtain_request_token()
         

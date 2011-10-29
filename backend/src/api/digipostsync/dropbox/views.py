@@ -1,6 +1,8 @@
+import urllib2
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils import simplejson
+import urllib
 from api.digipostsync.dropbox.models import DropboxToken
 from api.digipostsync.user.models import User
 from libs.dropbox_api import session
@@ -11,32 +13,20 @@ sessions_user = {}
 def build_dropbox_authorize_url(user):
     sess = session.DropboxSession(settings.DROPBOX_APP_KEY, settings.DROPBOX_APP_SECRET, 'app_folder')
     request_token = sess.obtain_request_token()
-
-    sessions_user[user.id] = sess
-
-    dropbox_token = DropboxToken.objects.get_or_create(user=user)[0]
-    dropbox_token.request_token = request_token
-    dropbox_token.save()
-
     url = sess.build_authorize_url(request_token)
+    sessions_user[user.id] = sess
 
     return url
 
 def get_access_token(user):
-
     sess = sessions_user[user.id]
+    access_token = sess.obtain_access_token()
 
     dropbox_token = DropboxToken.objects.get_or_create(user=user)[0]
+    dropbox_token.token = access_token.to_string()
+    dropbox_token.save()
 
-    #request_token = oauth.OAuthToken.from_string(dropbox_token.request_token)
-    #sess.request_token = request_token
-
-    print sess.request_token
-
-    access_token = sess.obtain_access_token(sess.request_token)
-    print access_token
-
-    return HttpResponse("OK")
+    return access_token
 
 def get_url_for_auth_dropbox(request, id):
     """
@@ -57,8 +47,6 @@ def tell_server_dropbox_token_is_ready_for_user(request, id):
 
     dropbox_token = DropboxToken.objects.get_or_create(user=user)[0]
     dropbox_token.token = get_access_token(user)
-
-    print get_access_token(user)
 
     dropbox_token.save()
 

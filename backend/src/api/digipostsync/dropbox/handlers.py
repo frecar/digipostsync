@@ -6,8 +6,6 @@ from api.digipostsync.user.models import User
 from piston.handler import BaseHandler
 from piston.utils import rc
 
-
-
 class DropboxTokenHandler(BaseHandler):
     model = DropboxToken
     fields = ('id', ('user',('id','username',)), 'token',)
