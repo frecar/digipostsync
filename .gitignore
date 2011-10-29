@@ -8,6 +8,7 @@
 digipost.db
 libs/.DS_Store
 #generated buildout stuff
+development.py
 backend/bin
 backend/develop-eggs
 backend/ownloads

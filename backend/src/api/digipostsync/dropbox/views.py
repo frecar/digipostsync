@@ -18,8 +18,6 @@ def build_dropbox_authorize_url(user):
     dropbox_token.request_token = request_token
     dropbox_token.save()
 
-    #access_token = sess.obtain_access_token(sess.request_token)
-
     url = sess.build_authorize_url(request_token)
 
     return url
