@@ -1,0 +1,17 @@
+#file endings not of generated files
+*.pyc
+*.pyo
+*.orig
+*~
+*.egg-info
+.*
+digipost.db
+#generated buildout stuff
+backend/bin
+backend/develop-eggs
+backend/ownloads
+backend/eggs
+backend/omelette
+backend/parts
+backend/.installed.cfg
+*.DS_STORE
