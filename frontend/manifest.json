@@ -6,13 +6,13 @@
       "matches": ["https://www.digipost.no/*"],
 	  "exclude_matches": ["https://www.digipost.no/post/*"],
       "css": [],
-      "js": ["jquery.js", "login.js"]
+      "js": ["lib/jquery.js", "login.js"]
     },
 
 	{
       "matches": ["https://www.digipost.no/post/privat/index.html*"],
       "css": [],
-      "js": ["jquery.js", "core.js", "index.js"]
+      "js": ["lib/jquery.js", "core.js", "index.js"]
     }
   ]
 }
