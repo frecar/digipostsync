@@ -6,7 +6,7 @@ it's fairly self-explanatory.
 
 import re
 
-from dropbox.rest import RESTClient
+from rest import RESTClient
 
 def format_path(path):
     """Normalize path for use with the Dropbox API.

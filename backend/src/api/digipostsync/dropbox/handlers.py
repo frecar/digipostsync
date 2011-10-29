@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from api.digipostsync.dropbox.models import DropboxToken
 from api.digipostsync.dropbox.forms import DropboxTokenForm
 from api.digipostsync.user.models import User
 from piston.handler import BaseHandler
 from piston.utils import rc
 
+
+
 class DropboxTokenHandler(BaseHandler):
     model = DropboxToken
-    fields = ('id', ('user',('id','username','password')), 'token',)
+    fields = ('id', ('user',('id','username',)), 'token',)
 
     def read(self, request, id=None):
         all = DropboxToken.objects.all()
+
+        #print get_access_token(User.objects.get(id=1))
+        #print build_dropbox_authorize_url(User.objects.get(id=1))
+
         if id:
             try:
                 return all.get(id=id)
