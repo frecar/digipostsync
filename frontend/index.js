@@ -4,10 +4,11 @@
  */
 
 
-DS.post('/users/', { username: DS.username, password: DS.password })
-	.success(function (data) {
+DS.post('/users/', { username: DS.user.username, password: DS.user.password })
+	.success(function (user) {
 		console.log('User synced to DigipostSync, hooking up GUI changes...');
-		//DS.load();
+		DS.user = user;
+		DS.load();
 	})
 	.error(function () {
 		console.error('Aiiii, Could not connect to DigipostSync!')
@@ -16,12 +17,12 @@ DS.post('/users/', { username: DS.username, password: DS.password })
 DS.load = function () {
 	$(window).bind('hashchange', function (data) {
 		if (location.hash.indexOf('#/innstillinger') == 0) {
-			$('#content').bind('DOMNodeInserted', function (event) {
-				if (event.target.id == 'content-container') {
-					DS.loadSyncTab();
-					$(this).unbind('DOMNodeInserted');
-				}
-			});
+			DS.afterPageLoad(DS.loadSyncTab);
+		
+			// Load our sync tab after going to dropbox
+			if (location.search.indexOf('oauth_token=') != -1) {
+				DS.afterPageLoad(DS.loadSyncPage);
+			}
 		}
 	});
 	
@@ -35,17 +36,23 @@ DS.loadSyncTab = function () {
 }
 
 DS.loadSyncPage = function () {
+	
+	// Hack: Get that oauth_token away when we click another link
+	if (location.search.indexOf('oauth_token=') != -1) {	
+		$('a[href^="#"]').each(function () {
+			$(this).attr('href', "index.html" + $(this).attr('href'));
+		});
+	}
+	
 	$('#innstillingerFrame ul.tabs .active').removeClass("active");
 	$(this).addClass("active");
 	$('#content .tabContent').load(chrome.extension.getURL("pages/sync.html"), function () {
 		$('#dropboxButton').click(function () {
-			DS.get('/').success(function (url) {
-				window.location(url);
-			})
-		})
+			DS.get('/user/' + DS.user.id + '/get_url_for_auth_dropbox/').success(function (data) {
+				window.location = $.parseJSON(data).url + "&oauth_callback=https://www.digipost.no/post/privat/index.html#/innstillinger/varsling";
+			});
+		});
 	});
 	
 	return false;
 }
-
-DS.load();

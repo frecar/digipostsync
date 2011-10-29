@@ -4,11 +4,12 @@
  */
 
 var DS = {
+	url_backend: 'http://127.0.0.1:8000/api',
 	
-	url_backend: 'http://10.0.49.203:8000/api',
-	
-	username: localStorage.getItem('ds_username'),
-	password: localStorage.getItem('ds_password'),
+	user: { 
+		username: localStorage.getItem('ds_username'),
+		password: localStorage.getItem('ds_password')
+	},
 	
 	/*
 	 * Ajax functions, basically just wrappers that add the backend url 
@@ -36,6 +37,15 @@ var DS = {
 	
 	delete: function (url, data) {
 		return DS.ajax('delete', url, data);
+	},
+	
+	afterPageLoad: function (func) {
+		$('#content').bind('DOMNodeInserted', function (event) {
+			if (event.target.id == 'content-container') {
+				func();
+				$(this).unbind('DOMNodeInserted');
+			}
+		});
 	}
 	
 }
