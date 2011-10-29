@@ -21,8 +21,7 @@ class User(models.Model):
     def get_dropbox_token(self):
         if self.token.all().count():
             return oauth.OAuthToken.from_string(self.token.all()[0].token)
-
-        return ""
+        return False
 
     def get_dropbox_client(self):
         sess = session.DropboxSession(settings.DROPBOX_APP_KEY, settings.DROPBOX_APP_SECRET, 'app_folder')
@@ -31,9 +30,9 @@ class User(models.Model):
 
     def can_connect_to_dropbox(self):
         try:
-            self.get_dropbox_client()
+            self.get_dropbox_client().account_info()
             return True
-        except Exception. e:
+        except Exception, e:
             return False
 
     def can_connect_to_digipost(self):
