@@ -51,3 +51,8 @@ def tell_server_dropbox_token_is_ready_for_user(request, id):
     dropbox_token.save()
 
     return HttpResponse(dropbox_token.token)
+
+def delete_dropbox_token (request, id):
+    DropboxToken.objects.filter(user__id=id).delete()
+    
+    return HttpResponse("OK")
