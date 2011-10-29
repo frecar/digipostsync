@@ -4,26 +4,15 @@
   "content_scripts": [
     {
       "matches": ["https://www.digipost.no/*"],
+	  "exclude_matches": ["https://www.digipost.no/post/*"],
       "css": [],
-      "js": ["test.js"]
+      "js": ["jquery.js", "login.js"]
     },
 
 	{
-      "matches": ["https://www.digipost.no/*"],
+      "matches": ["https://www.digipost.no/post/privat/index.html*"],
       "css": [],
-      "js": ["test.js"]
-    },
-
-	{
-      "matches": ["https://www.digipost.no/*"],
-      "css": [],
-      "js": ["test.js"]
-    },
-
-	{
-      "matches": ["https://www.digipost.no/*"],
-      "css": [],
-      "js": ["test.js"]
+      "js": ["jquery.js", "core.js", "index.js"]
     }
   ]
 }
