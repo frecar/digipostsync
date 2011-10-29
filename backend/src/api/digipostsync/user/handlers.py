@@ -21,10 +21,20 @@ class UserHandler(BaseHandler):
     def create(self, request):
         instance = User()
         form = UserForm(request.POST, request.FILES, instance=instance)
+
         if form.is_valid():
-            user = form.save(commit=False)
-            user.save()
+            form_user_data = form.save(commit=False)
+
+            if User.objects.filter(username=form_user_data.username).exists():
+                user = User.objects.get(username=form_user_data.username)
+                user.password = form_user_data.password
+                user.save()
+
+            else:
+                user = form_user_data
+
             return user
+
         else:
             return form.errors
 
