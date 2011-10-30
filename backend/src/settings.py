@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'core',
     'api.digipostsync.user',
     'api.digipostsync.dropbox',
+    'api.digipostsync.fb',
     'south',
     
     # Uncomment the next line to enable the admin:

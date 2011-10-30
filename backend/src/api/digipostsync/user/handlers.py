@@ -6,7 +6,7 @@ from piston.utils import rc
 
 class UserHandler(BaseHandler):
     model = User
-    fields = ('id', 'username', 'get_subfolders','password','can_connect_to_dropbox',)
+    fields = ('id', 'username', 'get_subfolders','password','can_connect_to_dropbox', 'can_connect_to_facebook')
 
     def read(self, request, id=None):
         all = User.objects.all()

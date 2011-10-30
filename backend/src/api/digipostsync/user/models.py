@@ -9,6 +9,7 @@ from api.digipostsync.dropbox.models import DropboxUploadedFileHashes
 from libs.digipost_api.client import DigipostClient
 from libs.dropbox_api import client, rest, session
 import md5
+import libs.facebook_api.client as fb_client
 
 postboxes = [u"postkasse", u"kjokkenbenk", u"arkiv"]
 
@@ -32,6 +33,13 @@ class User(models.Model):
     def can_connect_to_dropbox(self):
         try:
             self.get_dropbox_client().account_info()
+            return True
+        except Exception, e:
+            return False
+        
+    def can_connect_to_facebook(self):
+        try:
+            fb_client.GraphAPI(self.fb_token.all()[0].token).get_object("me")
             return True
         except Exception, e:
             return False
