@@ -5,11 +5,12 @@ from django.conf import settings
 from django.db import models
 import oauth.oauth as oauth
 import urllib
+from api.digipostsync.dropbox.models import DropboxUploadedFileHashes
 from libs.digipost_api.client import DigipostClient
 from libs.dropbox_api import client, rest, session
 import md5
 
-postboxes = [u"postkasse",u"kjokkenbenk",u"arkiv"]
+postboxes = [u"postkasse", u"kjokkenbenk", u"arkiv"]
 
 class User(models.Model):
     username = models.CharField(max_length=150)
@@ -39,7 +40,7 @@ class User(models.Model):
         try:
             self.get_digipost_client()
             return True
-        except Exception. e:
+        except Exception, e:
             return False
 
     def get_digipost_client(self):
@@ -59,6 +60,12 @@ class User(models.Model):
                 folders.append(folder['path'][len(root_folder):])
 
         return folders
+
+    def get_uploaded_files_hashes(self):
+        hashes = []
+        for hash in self.dropbox_file_hashes.all():
+            hashes.append(hash.hash)
+        return hashes
 
     def get_files_in_folder(self, root_folder):
         client = self.get_dropbox_client()
@@ -89,31 +96,53 @@ class User(models.Model):
         digipost_client = self.get_digipost_client()
         self.create_initial_dropbox_folders()
 
+        #Upload new files in arkiv folder
+        self.upload_new_files_into_archive()
+
         for box in postboxes:
+            digipost_hashes = []
+            dropbox_hashes = []
+
             for file in digipost_client.get_files(box):
-
                 f = file.get_content().read()
-                download_file_hash = md5.new()
-                download_file_hash.update(f)
+                file_hash = md5.new()
+                file_hash.update(f)
 
-                file_exists = False
+                digipost_hashes.append(file_hash.hexdigest())
 
-                for dropbox_file in self.get_files_in_folder(box):
+            for file in self.get_files_in_folder(box):
+                f = client.get_file(file)
+                file_hash = md5.new()
+                file_hash.update(f.read())
 
-                    current_file_file_hash = md5.new()
+                dropbox_hashes.append(file_hash.hexdigest())
 
-                    try:
-                        current_file_file_hash.update(client.get_file(dropbox_file).read())
-                    except Exception, e:
-                        pass
+            for file in self.get_files_in_folder(box):
+                f = client.get_file(file)
+                file_hash = md5.new()
+                file_hash.update(f.read())
 
-                    if download_file_hash.hexdigest() == current_file_file_hash.hexdigest():
-                        file_exists = True
-                        continue
+                if not file_hash.hexdigest() in digipost_hashes:
+                    client.file_delete(file)
 
-                if not file_exists:
-                    f = file.get_content().read()
+            for file in digipost_client.get_files(box):
+                f = file.get_content().read()
+                file_hash = md5.new()
+                file_hash.update(f)
+
+                if not file_hash.hexdigest() in dropbox_hashes:
                     client.put_file('/' + box + "/" + file.emne + ".pdf", f)
+                    DropboxUploadedFileHashes.objects.get_or_create(user=self, hash=file_hash.hexdigest())
 
         return client.metadata("/")
-    
+
+    def upload_new_files_into_archive(self):
+        client = self.get_dropbox_client()
+
+        for file in self.get_files_in_folder("arkiv"):
+            f = client.get_file(file)
+            file_hash = md5.new()
+            file_hash.update(f.read())
+
+            if not file_hash.hexdigest() in self.get_uploaded_files_hashes():
+                print file
