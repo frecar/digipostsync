@@ -38,9 +38,9 @@ class DigipostClient(object):
             else:
                 raise e
             
-        self.konto = self._read(self.URL_KONTO)
+        self.konto = self._json(self.URL_KONTO)
         
-    def _read (self, url, data=None, format="JSON", headers={}, encode=True):
+    def _read (self, url, data=None, format=None, headers={}, encode=True):
         """
         Send a GET (or POST, if data is present) request, with 
         the login-cookie attached
@@ -57,13 +57,17 @@ class DigipostClient(object):
         else:
             return result.read()
         
+    def _json (self, *args, **kwargs):
+        kwargs.update({'format': 'JSON'})
+        return self._read(*args, **kwargs)
+        
     def get_files (self, inbox):
         
         if not inbox + 'Uri' in self.konto:
             raise DigipostError('Did not find an URI for "%s" in this account; Typo?' % inbox)
         
         url = self.konto[inbox + 'Uri']
-        return [DigipostFile(data, self._opener) for data in self._read(url)]
+        return [DigipostFile(data, self) for data in self._json(url)]
     
     def upload_file (self, file, name):
 
@@ -77,23 +81,23 @@ class DigipostClient(object):
     
 class DigipostFile (object):
     
-    def __init__ (self, data, opener):
+    def __init__ (self, data, client):
         self.__dict__ = data
-        self._opener = opener
+        self._client = client
         
     def __repr__ (self):
         return self.emne
     
     def get_content (self):
-        return self._opener.open(self.brevUri)
+        return self._client._read(self.brevUri)
     
     def move_to_kjokkenbenk (self):
-        self._opener.open(self.tilKjokkenbenkUri)
+        return self._client._read(self.tilKjokkenbenkUri, {'token': self._client.konto['token']})
         
     def move_to_arkiv (self):
-        self._opener.open(self.arkiverUri)
+        return self._client._read(self.arkiverUri, {'token': self._client.konto['token']})
 
 with open('lala.pdf', 'r') as f:        
-    print DigipostClient('27088949574', 'JokerPoker1').upload_file(f, 'TestTestTest')
+    print DigipostClient('27088949574', 'JokerPoker1').get_files('kjokkenbenk')[0].move_to_arkiv()
         
         
