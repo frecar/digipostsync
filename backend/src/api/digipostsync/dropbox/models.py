@@ -15,7 +15,7 @@ class DropboxUploadedFileHashes(models.Model):
     user = models.ForeignKey('user.User', related_name="dropbox_file_hashes")
     hash = models.CharField(max_length=200)
 
-    folder = models.CharField(max_length=150)
+    folder = models.CharField(max_length=150, default="")
     
     def __unicode__(self):
         return self.hash

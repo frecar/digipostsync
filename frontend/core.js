@@ -39,13 +39,19 @@ var DS = {
 		return DS.ajax('delete', url, data);
 	},
 	
-	afterPageLoad: function (func) {
-		$('#content').bind('DOMNodeInserted', function (event) {
-			if (event.target.id == 'content-container') {
-				func();
-				$(this).unbind('DOMNodeInserted');
-			}
-		});
+	afterPageLoad: function (func, selector) {
+		
+		if ($(selector).length > 0) {
+			func();
+		}
+		else {
+			$('#content').bind('DOMNodeInserted', function (event) {
+				if (event.target.id == 'content-container') {
+					func();
+					$(this).unbind('DOMNodeInserted');
+				}
+			});
+		}
 	}
 	
 }

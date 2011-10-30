@@ -136,12 +136,11 @@ class User(models.Model):
                                 file_hash_digipost_file.update(f)
 
                                 if file_hash.hexdigest() == file_hash_digipost_file.hexdigest():
-                                    
+
                                     if b == u"arkiv":
                                         digipost_file.move_to_arkiv()
                                     else:
                                         digipost_file.move_to_kjokkenbenk()
-                
 
                     client.file_delete(file)
 
