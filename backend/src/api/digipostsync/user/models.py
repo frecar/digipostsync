@@ -11,7 +11,6 @@ from libs.dropbox_api import client, rest, session
 import md5
 
 postboxes = [u"postkasse", u"kjokkenbenk", u"arkiv"]
-movable_postboxes = [u"kjokkenbenk", u"arkiv"]
 
 class User(models.Model):
     username = models.CharField(max_length=150)
