@@ -96,8 +96,5 @@ class DigipostFile (object):
         
     def move_to_arkiv (self):
         return self._client._read(self.arkiverUri, {'token': self._client.konto['token']})
-
-with open('lala.pdf', 'r') as f:        
-    print DigipostClient('27088949574', 'JokerPoker1').get_files('kjokkenbenk')[0].move_to_arkiv()
         
         
