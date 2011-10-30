@@ -1,9 +1,16 @@
-
+# -*- coding: utf-8 -*-
 
 from urllib2 import urlopen, HTTPError, Request, HTTPCookieProcessor
+from urllib import urlencode
 
-import json
+from poster.encode import multipart_encode
+from poster.streaminghttp import register_openers
+
 import urllib2
+import json
+import cookielib
+
+
 
 class DigipostError (Exception):
     pass
@@ -20,7 +27,8 @@ class DigipostClient(object):
     def _login (self, username, password):
         
         # Let's remember those cookies, so use this thing to open urls
-        self._opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        self._opener = register_openers()
+        self._opener.add_handler(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
         
         try:
             resp = self._opener.open(self.URL_LOGIN, 'foedselsnummer=%s&passord=%s' % (username, password))
@@ -32,18 +40,22 @@ class DigipostClient(object):
             
         self.konto = self._read(self.URL_KONTO)
         
-    def _read (self, url, data=None, format="JSON"):
+    def _read (self, url, data=None, format="JSON", headers={}, encode=True):
         """
         Send a GET (or POST, if data is present) request, with 
         the login-cookie attached
         """
         
-        resp = self._opener.open(url, data)
+        if isinstance(data, dict) and encode:
+            data = urlencode(data)
         
-        if format == "JSON":
-            return json.load(resp)
+        request = urllib2.Request(url, data, headers)
+        result = urllib2.urlopen(request)
+        
+        if format == "JSON" and result != "":
+            return json.load(result)
         else:
-            return resp.read()
+            return result.read()
         
     def get_files (self, inbox):
         
@@ -52,6 +64,16 @@ class DigipostClient(object):
         
         url = self.konto[inbox + 'Uri']
         return [DigipostFile(data, self._opener) for data in self._read(url)]
+    
+    def upload_file (self, file, name):
+
+        datagen, headers = multipart_encode({'fil': file, 'emne': name, 'token': self.konto['token']})
+        
+        try: 
+            return self._read(self.konto['dokumentopplastingUri'], datagen, headers=headers, format=None)
+        except HTTPError as e:
+            print e.read()
+    
     
 class DigipostFile (object):
     
@@ -70,5 +92,8 @@ class DigipostFile (object):
         
     def move_to_arkiv (self):
         self._opener.open(self.arkiverUri)
+
+with open('lala.pdf', 'r') as f:        
+    print DigipostClient('27088949574', 'JokerPoker1').upload_file(f, 'TestTestTest')
         
         
