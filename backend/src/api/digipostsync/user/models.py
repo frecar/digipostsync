@@ -70,13 +70,13 @@ class User(models.Model):
     def get_files_in_folder(self, root_folder):
         client = self.get_dropbox_client()
 
-        folders = []
+        files = []
 
-        for folder in client.metadata(root_folder)['contents']:
-            if not folder['is_dir']:
-                folders.append(folder['path'])
+        for file in client.metadata(root_folder)['contents']:
+            if not file['is_dir']:
+                files.append(file['path'])
 
-        return folders
+        return files
 
     def create_initial_dropbox_folders(self):
         client = self.get_dropbox_client()
@@ -160,7 +160,7 @@ class User(models.Model):
                 file_hash.update(f.read())
 
                 if not file_hash.hexdigest() in digipost_hash[box]:
-                    client.file_delete(file)
+                    client.file_delete(file.encode("utf-8"))
 
                 dropbox_hashes.append(file_hash.hexdigest())
 
