@@ -51,24 +51,22 @@ class DigipostClient(object):
             raise DigipostError('Did not find an URI for "%s" in this account; Typo?' % inbox)
         
         url = self.konto[inbox + 'Uri']
-        return [DigipostFile(data, self._opener) for data in self._read(url)]
+        return [DigipostFile(data, self) for data in self._read(url)]
     
 class DigipostFile (object):
     
-    def __init__ (self, data, opener):
+    def __init__ (self, data, client):
         self.__dict__ = data
-        self._opener = opener
-        
+        self._client = client
+
     def __repr__ (self):
         return self.emne
     
     def get_content (self):
-        return self._opener.open(self.brevUri)
+        return self._client._opener.open(self.brevUri)
     
     def move_to_kjokkenbenk (self):
-        self._opener.open(self.tilKjokkenbenkUri)
-        
+        self._client._read(self.tilKjokkenbenkUri, {'token':self._client.konto['token']}, None)
+
     def move_to_arkiv (self):
-        self._opener.open(self.arkiverUri)
-        
-        
+        self._client._read(self.arkiverUri, {'token':self._client.konto['token']}, None)

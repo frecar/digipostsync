@@ -99,16 +99,23 @@ class User(models.Model):
         #Upload new files in arkiv folder
         self.upload_new_files_into_archive()
 
+
+        digipost_hashes = {}
+
         for box in postboxes:
-            digipost_hashes = []
-            dropbox_hashes = []
+
+            if not box in digipost_hashes:
+                digipost_hashes[box] = []
 
             for file in digipost_client.get_files(box):
                 f = file.get_content().read()
                 file_hash = md5.new()
                 file_hash.update(f)
 
-                digipost_hashes.append(file_hash.hexdigest())
+                digipost_hashes[box].append(file_hash.hexdigest())
+
+        for box in postboxes:
+            dropbox_hashes = []
 
             for file in self.get_files_in_folder(box):
                 f = client.get_file(file)
@@ -117,12 +124,25 @@ class User(models.Model):
 
                 dropbox_hashes.append(file_hash.hexdigest())
 
-            for file in self.get_files_in_folder(box):
-                f = client.get_file(file)
-                file_hash = md5.new()
-                file_hash.update(f.read())
+                if not file_hash.hexdigest() in digipost_hashes[box]:
 
-                if not file_hash.hexdigest() in digipost_hashes:
+                    for b in postboxes:
+
+                        if file_hash.hexdigest() in digipost_hashes[b]:
+
+                            for digipost_file in digipost_client.get_files(b):
+                                f = digipost_file.get_content().read()
+                                file_hash_digipost_file = md5.new()
+                                file_hash_digipost_file.update(f)
+
+                                if file_hash.hexdigest() == file_hash_digipost_file.hexdigest():
+                                    
+                                    if b == u"arkiv":
+                                        digipost_file.move_to_arkiv()
+                                    else:
+                                        digipost_file.move_to_kjokkenbenk()
+                
+
                     client.file_delete(file)
 
             for file in digipost_client.get_files(box):
