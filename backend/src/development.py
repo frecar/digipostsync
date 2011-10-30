@@ -1,4 +1,4 @@
 from settings import *
 
-DROPBOX_APP_KEY = '5nzimaewceehefp'
-DROPBOX_APP_SECRET = 'z2jo3wb7fi8ezut'
+DROPBOX_APP_KEY = 'gyqx9jdvi0c3ms4'
+DROPBOX_APP_SECRET = '7lzaa7cdni90p4k'

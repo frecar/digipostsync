@@ -11,7 +11,7 @@
 
 	{
       "matches": ["https://www.digipost.no/post/privat/index.html*"],
-      "css": [],
+      "css": ["css/dirs.css"],
       "js": ["lib/jquery.js", "core.js", "index.js"]
     }
   ]
