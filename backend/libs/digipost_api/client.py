@@ -88,7 +88,7 @@ class DigipostFile (object):
         return self.emne
     
     def get_content (self):
-        return self._client._read(self.brevUri)
+        return self._client._opener.open(self.brevUri)
     
     def move_to_kjokkenbenk (self):
         return self._client._read(self.tilKjokkenbenkUri, {'token': self._client.konto['token']})
