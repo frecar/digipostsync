@@ -126,9 +126,12 @@ class User(models.Model):
 
         #Upload new files in arkiv folder
         self.upload_new_files_into_archive(digipost_client)
-
+        print "done uploading new files"
 
         for box in postboxes:
+
+            print "performing %s" % box
+
             digipost_hash = self.get_digipost_hashes(digipost_client)
 
             for file in self.get_files_in_folder(box):
@@ -157,7 +160,9 @@ class User(models.Model):
 
                                     else:
                                         digipost_file.move_to_kjokkenbenk()
-                                        
+
+            print "done check for moving files"
+
             digipost_hash = self.get_digipost_hashes(digipost_client)
 
             dropbox_hashes = []
@@ -172,6 +177,8 @@ class User(models.Model):
 
                 dropbox_hashes.append(file_hash.hexdigest())
 
+            print "done remove deleted files"
+
             for file in digipost_client.get_files(box):
                 f = file.get_content().read()
                 file_hash = md5.new()
@@ -180,6 +187,8 @@ class User(models.Model):
                 if file_hash.hexdigest() in digipost_hash[box] and file_hash.hexdigest() not in dropbox_hashes:
                     client.put_file('/' + box + "/" + file.emne + ".pdf", f)
                     DropboxUploadedFileHashes.objects.get_or_create(user=self, hash=file_hash.hexdigest())
+
+            print "done create new files"
 
     def upload_new_files_into_archive(self, digipost_client):
         client = self.get_dropbox_client()

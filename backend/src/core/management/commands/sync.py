@@ -9,3 +9,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for user in User.objects.all():
             user.sync_digipost_dropbox()
+            print "done for user %s " % user.username
